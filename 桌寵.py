@@ -1,13 +1,11 @@
 import pygame
 import tkinter as tk
-# from tkinter import Menu,Label
 from tkinter import *
 from PIL import Image, ImageTk
 import os
 from os import system
 import time
 import threading
-# 导入包里的模块
 import tkinter.filedialog
 pygame.mixer.init()
 
@@ -28,47 +26,35 @@ res = []
 num = 0
 now_music = ''
 
-# 音樂
+
 def ADD():
-    # 添加文件
-    # 声明全局变量folder,res
     global folder
     global res
     if not folder:
         try:
             folder = tkinter.filedialog.askdirectory()
-            # 列表指导式,if判断是否结尾是('.mp3','.wav','.ogg','.m4a','.flac'),识别音频文件
-            # musics得到文件内容
             musics = [folder + '\\' + music for music in os.listdir(folder) if music.endswith(('.mp3','.wav','.ogg','.m4a','.flac'))]
             ret = []
             for i in musics:
-                ret.append(i.split('\\')[1:])  # 切片，取到:后面的操作
-                res.append(i.replace('\\', '/'))  # 将i张的\\替换成/，列表添加到res
+                ret.append(i.split('\\')[1:])
+                res.append(i.replace('\\', '/'))
             var2 = StringVar()
-            var2.set(ret)  # 将ret列表去重，set集合
+            var2.set(ret)
         finally:
             return
-#     if not folder:
-#         return
-    # 声明全局变量，playing表示播放状态
     global playing
     playing = True
 
 
 def play():
-    # 播放音乐
-    # 混音初始化,num给播放的歌创建id
     if len(res):
         pygame.mixer.init()
         global num
         while playing:
             if not pygame.mixer.music.get_busy():
-                # 随机播放一首歌曲
                 nextMusic = res[num]
                 pygame.mixer.music.load(nextMusic)
-                # 播放一次
                 pygame.mixer.music.play()
-                #
                 if len(res) - 1 == num:
                     num = 0
                 else:
@@ -84,30 +70,23 @@ def PLAY():
     if not folder:
         try:
             folder = tkinter.filedialog.askdirectory()
-            # 列表指导式,if判断是否结尾是('.mp3','.wav','.ogg','.m4a','.flac'),识别音频文件
-            # musics得到文件内容
             musics = [folder + '\\' + music for music in os.listdir(folder) if music.endswith(('.mp3','.wav'))]
             ret = []
             for i in musics:
-                ret.append(i.split('\\')[1:])  # 切片，取到:后面的操作
-                res.append(i.replace('\\', '/'))  # 将i张的\\替换成/，列表添加到res
+                ret.append(i.split('\\')[1:])
+                res.append(i.replace('\\', '/'))
             var2 = StringVar()
-            var2.set(ret)  # 将ret列表去重，set集合
+            var2.set(ret)
         finally:
             return
-#     if not folder:
-#         return
     global playing
     playing = True
     pygame.mixer.music.unpause()
-    # 创建一个线程来播放音乐，当前主线程来接收用户操作
     t = threading.Thread(target=play)
-    # start执行线程
     t.start()
 
 
 def NEXT():
-    # 下一首,需要先暂停当前音乐，而主线程接收用户操作
     global playing
     palying = False
     pygame.mixer.music.stop()
@@ -116,21 +95,15 @@ def NEXT():
         num = 0
 
     playing = True
-    # 必须创建一个线程来播放音乐，当前主线程来接收用户操作
     t = threading.Thread(target=play)
-    # start执行线程
     t.start()
 
 
 def CLOSE():
-    # 关闭窗口
-    # 有子线程和主线程，需要先结束子线程
     global playing
     palying = False
     time.sleep(0.2)
     try:
-        # 停止播放，如果已经停止
-        # 再次停止时，抛出异常
         pygame.mixer.music.stop()
         pygame.mixer.quit()
     except:
@@ -138,7 +111,6 @@ def CLOSE():
     root.destroy()
 
 def PREV():
-    # 上一首
     global playing
     palying = False
     pygame.mixer.music.stop()
@@ -151,9 +123,7 @@ def PREV():
         num -= 2
 
     playing = True
-    # 必须创建一个线程来播放音乐，当前主线程来接收用户操作
     t = threading.Thread(target=play)
-    # start执行线程
     t.start()
 
 def PAUSE():
@@ -162,7 +132,6 @@ def PAUSE():
     pygame.mixer.music.pause()
 
 
-# 計時
 def countdownT():
     global num_of_secs
     global time_h
@@ -186,7 +155,7 @@ def countdownT():
         L_t.config(text=f'{min_sec_format}')
         time.sleep(0.995)
         num_of_secs -= 1
-    #winsound.PlaySound("*", winsound.SND_ALIAS)
+
     if ct == 0:
         ctfin.play()
     global enter_p
@@ -203,7 +172,6 @@ def countdown():
     global time_s
     if time_m_entry.get() == '' and time_s_entry.get() == '' and time_h_entry.get() == '' :
         L_t.config(text='請輸入時間')
-#         tk.messagebox.showerror('message', '請輸入時間')
     elif enter_p:
         if time_h_entry.get() == '':
             time_h = 0
@@ -225,7 +193,6 @@ def countdown():
         enter_p=False
 
 def validate(P):
-    #print(P)
     if str.isdigit(P) or P == '':
         return True
     else:
@@ -358,13 +325,6 @@ def shut_show():
     L_word.config(text='電腦將於以下時間後關機')
 
 
-# def color():
-    
-
-
-
-
-
 root = tk.Tk()
 menu = tk.Menu(root)
 root.overrideredirect(True)
@@ -386,7 +346,7 @@ h_box = 400
 img = Image.open('char.png')
 w,h = img.size
 img_resized = resize(w,h,w_box,h_box,img)
-tk_img = ImageTk.PhotoImage(img_resized)    # 轉換為 tk 圖片物件
+tk_img = ImageTk.PhotoImage(img_resized)
 
 BG = tk.Label(root,text="",font= ('Helvetica 16'),width=100, height=100
               ,bg="whitesmoke"
@@ -394,7 +354,7 @@ BG = tk.Label(root,text="",font= ('Helvetica 16'),width=100, height=100
 BG.pack()
 
 L = tk.Label(root, image=tk_img, width=w_box, height=h_box
-                ,bg="whitesmoke",anchor="s")  # 在 Lable 中放入圖片
+                ,bg="whitesmoke",anchor="s")
 L.place(x=0,y=100)
 
 
@@ -420,36 +380,20 @@ button_reset = Button(root, text="重製", font=('Arial', 13),command=entry_rese
 
 
 
-'''
-bred = Button(root, text="紅色", font=('Arial', 13),command=)
-bgreen = Button(root, text="綠色", font=('Arial', 13),command=)
-bblue = Button(root, text="藍色", font=('Arial', 13),command=)
-bblack = Button(root, text="黑色", font=('Arial', 13),command=)
-bwhite = Button(root, text="白色", font=('Arial', 13),command=)
-'''
-'''
-
-'''
 vcmd = (root.register(validate), '%P')
 time_h_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
-# time_h_entry.place(x=w_box*1/3-70,y=0,width=52, height=30)
 time_m_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
-# time_m_entry.place(x=w_box*2/3-70,y=0,width=52, height=30)
 time_s_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
-# time_s_entry.place(x=w_box*3/3-140,y=0,width=52, height=30)
-
 
 
 m = Menu(root, tearoff = 1)
 
 music_menu = Menu(root, tearoff = 1)
-
 music_menu.add_command(label="加入音樂來源",command=ADD)
 music_menu.add_command(label="播放", command=PLAY)
 music_menu.add_command(label="暫停", command=PAUSE)
 music_menu.add_command(label="上一首",command=PREV)
 music_menu.add_command(label="下一首",command=NEXT)
-
 
 
 tool_menu = Menu(root, tearoff = 1)
@@ -458,11 +402,6 @@ tool_menu.add_command(label="小算盤",command=COMPUTER)
 tool_menu.add_command(label="放大鏡",command=MAGNIFY)
 tool_menu.add_command(label="字元對應表",command=CHARMAP)
 tool_menu.add_command(label="電腦關機",command=shut_show)
-
-
-
-
-# m.add_command(label ="字體顏色")
 
 
 m.add_cascade(label='音樂', menu=music_menu)
