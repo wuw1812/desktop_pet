@@ -17,7 +17,6 @@ num_of_secs = 0
 min_sec_format = '00:00'
 ct = 0
 ctfin = pygame.mixer.Sound(os.path.join('fin.wav'))
-f_c = "black"
 
 
 folder = ''
@@ -42,6 +41,7 @@ def ADD():
             var2.set(ret)
         finally:
             return
+
     global playing
     playing = True
 
@@ -79,6 +79,7 @@ def PLAY():
             var2.set(ret)
         finally:
             return
+
     global playing
     playing = True
     pygame.mixer.music.unpause()
@@ -132,6 +133,7 @@ def PAUSE():
     pygame.mixer.music.pause()
 
 
+
 def countdownT():
     global num_of_secs
     global time_h
@@ -172,16 +174,17 @@ def countdown():
     global time_s
     if time_m_entry.get() == '' and time_s_entry.get() == '' and time_h_entry.get() == '' :
         L_t.config(text='請輸入時間')
+
     elif enter_p:
         if time_h_entry.get() == '':
             time_h = 0
         else:
             time_h = int(time_h_entry.get())
         
-        if time_m_entry.get() == '':
+        if time_m_shut_entry.get() == '':
             time_m = 0
         else:
-            time_m = int(time_m_entry.get())
+            time_m = int(time_m_shut_entry.get())
         
         if time_s_entry.get() == '':
             time_s = 0
@@ -233,20 +236,20 @@ def MAGNIFY():
 
 
 def PC_SHUTDOWNT():
-    if time_h_entry.get() == '':
+    if time_h_shut_entry.get() == '':
         time_h = 0
     else:
-        time_h = int(time_h_entry.get())
+        time_h = int(time_h_shut_entry.get())
     
-    if time_m_entry.get() == '':
+    if time_m_shut_entry.get() == '':
         time_m = 0
     else:
         time_m = int(time_m_entry.get())
     
-    if time_s_entry.get() == '':
+    if time_s_shut_entry.get() == '':
         time_s = 0
     else:
-        time_s = int(time_s_entry.get())
+        time_s = int(time_s_shut_entry.get())
     shut_time = time_h*3600 + time_m*60 + time_s
     os.system('shutdown -a')
     os.system('shutdown -s -t {}'.format(shut_time))
@@ -270,9 +273,6 @@ def CHARMAP():
 
 
 def nope():
-    global num_of_secs
-    num_of_secs = 0
-    
     button_sure.place(x=75,y=-100)
     button_nope.place(x=275,y=-100)
     button_reset.place(x=175,y=-100)
@@ -280,6 +280,10 @@ def nope():
     time_h_entry.place(x=w_box*1/3-70,y=-100,width=52, height=30)
     time_m_entry.place(x=w_box*2/3-70,y=-100,width=52, height=30)
     time_s_entry.place(x=w_box*3/3-140,y=-100,width=52, height=30)
+
+    time_h_shut_entry.place(x=65,y=-30,width=52, height=30)
+    time_m_shut_entry.place(x=155,y=-30,width=52, height=30)
+    time_s_shut_entry.place(x=245,y=-30,width=52, height=30)
 
     L_h.place(x=400*1/4+50,y=-100)
     L_m.place(x=400*1/4+50,y=-100)
@@ -299,11 +303,17 @@ def count_show():
     time_m_entry.place(x=155,y=0,width=52, height=30)
     time_s_entry.place(x=245,y=0,width=52, height=30)
     
+    time_h_shut_entry.place(x=65,y=-30,width=52, height=30)
+    time_m_shut_entry.place(x=155,y=-30,width=52, height=30)
+    time_s_shut_entry.place(x=245,y=-30,width=52, height=30)
+    
     L_h.place(x=115,y=0)
     L_m.place(x=205,y=0)
     L_s.place(x=295,y=0)
     L_t.place(x=-1,y=33)
     L_t.config(text=f"{min_sec_format}")
+    
+    L_word.place(x=0,y=-33)
 
 def shut_show():
     button_sure.place(x=75,y=66)
@@ -312,9 +322,13 @@ def shut_show():
     button_sure.config(text='確定',command=PC_SHUTDOWN)
     button_reset.config(text='取消關機',command=REGRETT)
     
-    time_h_entry.place(x=65,y=30,width=52, height=30)
-    time_m_entry.place(x=155,y=30,width=52, height=30)
-    time_s_entry.place(x=245,y=30,width=52, height=30)
+    time_h_entry.place(x=65,y=-30,width=52, height=30)
+    time_m_entry.place(x=155,y=-30,width=52, height=30)
+    time_s_entry.place(x=245,y=-30,width=52, height=30)
+    
+    time_h_shut_entry.place(x=65,y=30,width=52, height=30)
+    time_m_shut_entry.place(x=155,y=30,width=52, height=30)
+    time_s_shut_entry.place(x=245,y=30,width=52, height=30)
     
     L_h.place(x=115,y=30)
     L_m.place(x=205,y=30)
@@ -325,11 +339,23 @@ def shut_show():
     L_word.config(text='電腦將於以下時間後關機')
 
 
+
+def aop_on():
+    show_mod.entryconfigure("關閉", state='normal')
+    show_mod.entryconfigure("開啟", state='disable')
+    root.call('wm', 'attributes', '.', '-topmost', '1')
+
+def aop_off():
+    show_mod.entryconfigure("開啟", state='normal')
+    show_mod.entryconfigure("關閉", state='disable')
+    root.call('wm', 'attributes', '.', '-topmost', '0')
+
+
 root = tk.Tk()
 menu = tk.Menu(root)
 root.overrideredirect(True)
 root.geometry('400x500+600+300')
-
+root.call('wm', 'attributes', '.', '-topmost', '1')
 root.attributes("-transparentcolor", "whitesmoke")
 
 def resize(w,h,w_box,h_box,img):
@@ -359,7 +385,7 @@ L.place(x=0,y=100)
 
 
 L_word = tk.Label(root,text="測試用文字",font= ('Helvetica 16'),width=33
-                , height=1,bg="whitesmoke",anchor="n",fg=f'red')
+                , height=1,bg="whitesmoke",anchor="n")
 
 L_h = tk.Label(root,text="時",font= ('Helvetica 16'),width=3
                 , height=1,bg="whitesmoke",anchor="n")
@@ -386,9 +412,15 @@ time_m_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecom
 time_s_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
 
 
-m = Menu(root, tearoff = 1)
+time_h_shut_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
+time_m_shut_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
+time_s_shut_entry = tk.Entry(root, validate='key',font= ('Helvetica 16'), validatecommand=vcmd)
 
-music_menu = Menu(root, tearoff = 1)
+
+m = Menu(root, tearoff = 0)
+
+music_menu = Menu(root, tearoff = 0)
+
 music_menu.add_command(label="加入音樂來源",command=ADD)
 music_menu.add_command(label="播放", command=PLAY)
 music_menu.add_command(label="暫停", command=PAUSE)
@@ -396,17 +428,24 @@ music_menu.add_command(label="上一首",command=PREV)
 music_menu.add_command(label="下一首",command=NEXT)
 
 
-tool_menu = Menu(root, tearoff = 1)
+tool_menu = Menu(root, tearoff = 0)
 tool_menu.add_command(label="記事本",command=NOTE)
 tool_menu.add_command(label="小算盤",command=COMPUTER)
 tool_menu.add_command(label="放大鏡",command=MAGNIFY)
 tool_menu.add_command(label="字元對應表",command=CHARMAP)
-tool_menu.add_command(label="電腦關機",command=shut_show)
+
+
+show_mod = Menu(root, tearoff = 0)
+
+show_mod.add_command(label="開啟", command= aop_on)
+show_mod.add_command(label="關閉", command=aop_off)
 
 
 m.add_cascade(label='音樂', menu=music_menu)
 m.add_cascade(label='小工具', menu=tool_menu)
+m.add_cascade(label='保持在上', menu=show_mod)
 m.add_command(label ="倒計時",command=count_show)
+m.add_command(label="電腦關機",command=shut_show)
 m.add_separator()
 m.add_command(label ="退出",command=CLOSE)
 
@@ -428,6 +467,8 @@ def move(event):
     if y>35:
         root.geometry(f"+{m-x}+{n-y-100}")
 
+
+show_mod.entryconfigure("開啟", state='disable')
 
 root.bind('<Motion>', motion)
 root.bind('<B1-Motion>',move)
