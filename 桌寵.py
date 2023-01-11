@@ -17,7 +17,7 @@ num_of_secs = 0
 min_sec_format = '00:00'
 ct = 0
 ctfin = pygame.mixer.Sound(os.path.join('fin.wav'))
-
+lock = 0
 
 folder = ''
 
@@ -153,7 +153,7 @@ def countdownT():
             min_sec_format = '{:02d}:{:02d}:{:02d}'.format(h,m2,s)
         else:
             min_sec_format = '{:02d}:{:02d}'.format(m2,s)
-        print(min_sec_format, end='\r')
+        
         L_t.config(text=f'{min_sec_format}')
         time.sleep(0.995)
         num_of_secs -= 1
@@ -340,15 +340,29 @@ def shut_show():
 
 
 
-def aop_on():
+def stay_top_on():
     show_mod.entryconfigure("關閉", state='normal')
     show_mod.entryconfigure("開啟", state='disable')
     root.call('wm', 'attributes', '.', '-topmost', '1')
 
-def aop_off():
+def stay_top_off():
     show_mod.entryconfigure("開啟", state='normal')
     show_mod.entryconfigure("關閉", state='disable')
     root.call('wm', 'attributes', '.', '-topmost', '0')
+
+
+def lock_on():
+    global lock
+    lock_mod.entryconfigure("關閉", state='normal')
+    lock_mod.entryconfigure("開啟", state='disable')
+    lock = 1
+
+def lock_off():
+    global lock
+    lock_mod.entryconfigure("開啟", state='normal')
+    lock_mod.entryconfigure("關閉", state='disable')
+    lock = 0
+
 
 
 root = tk.Tk()
@@ -437,13 +451,20 @@ tool_menu.add_command(label="字元對應表",command=CHARMAP)
 
 show_mod = Menu(root, tearoff = 0)
 
-show_mod.add_command(label="開啟", command= aop_on)
-show_mod.add_command(label="關閉", command=aop_off)
+show_mod.add_command(label="開啟", command= stay_top_on)
+show_mod.add_command(label="關閉", command= stay_top_off)
+
+
+lock_mod = Menu(root, tearoff = 0)
+
+lock_mod.add_command(label="開啟", command= lock_on)
+lock_mod.add_command(label="關閉", command= lock_off)
 
 
 m.add_cascade(label='音樂', menu=music_menu)
 m.add_cascade(label='小工具', menu=tool_menu)
 m.add_cascade(label='保持在上', menu=show_mod)
+m.add_cascade(label='固定位置', menu=lock_mod)
 m.add_command(label ="倒計時",command=count_show)
 m.add_command(label="電腦關機",command=shut_show)
 m.add_separator()
@@ -463,12 +484,16 @@ def motion(event):
 
 def move(event):
     global x,y
+    global lock
     m, n = root.winfo_pointerxy()
-    if y>35:
-        root.geometry(f"+{m-x}+{n-y-100}")
+    if lock == 0 :
+        if y>35:
+            root.geometry(f"+{m-x}+{n-y-100}")
 
 
 show_mod.entryconfigure("開啟", state='disable')
+lock_mod.entryconfigure("關閉", state='disable')
+
 
 root.bind('<Motion>', motion)
 root.bind('<B1-Motion>',move)
