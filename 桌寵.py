@@ -34,6 +34,7 @@ def ADD():
     global added
     if added != 0:
         res = []
+
     try:
         folder = tkinter.filedialog.askdirectory()
         musics = [folder + '\\' + music for music in os.listdir(folder) if music.endswith(('.mp3','.wav','.ogg','.m4a','.flac'))]
@@ -50,6 +51,7 @@ def ADD():
     global playing
     playing = True
     added = 1
+
 
 def play():
     if len(res):
@@ -358,16 +360,30 @@ def stay_top_off():
 
 def lock_on():
     global lock
+    global x,y
+    global nx,ny
+    global ox,oy
+    ox,oy = nx-x,ny-y-100
     lock_mod.entryconfigure("關閉", state='normal')
     lock_mod.entryconfigure("開啟", state='disable')
+    lock_mod.entryconfigure("固定在上個位置", state='disable')
     lock = 1
 
 def lock_off():
     global lock
     lock_mod.entryconfigure("開啟", state='normal')
     lock_mod.entryconfigure("關閉", state='disable')
+    lock_mod.entryconfigure("固定在上個位置", state='normal')
     lock = 0
 
+def lock_last():
+    global ox,oy
+    global lock
+    root.geometry(f"+{ox}+{oy}")
+    lock_mod.entryconfigure("開啟", state='disable')
+    lock_mod.entryconfigure("關閉", state='normal')
+    lock_mod.entryconfigure("固定在上個位置", state='disable')
+    lock = 1
 
 
 root = tk.Tk()
@@ -464,6 +480,7 @@ lock_mod = Menu(root, tearoff = 0)
 
 lock_mod.add_command(label="開啟", command= lock_on)
 lock_mod.add_command(label="關閉", command= lock_off)
+lock_mod.add_command(label="固定在上個位置",command= lock_last)
 
 
 m.add_cascade(label='音樂', menu=music_menu)
@@ -485,19 +502,23 @@ def do_popup(event):
 
 def motion(event):
     global x,y
+    global nx,ny
+    nx, ny = root.winfo_pointerxy()
     x, y = event.x, event.y
 
 def move(event):
     global x,y
     global lock
-    m, n = root.winfo_pointerxy()
+    global nx,ny
+    nx, ny = root.winfo_pointerxy()
     if lock == 0 :
         if y>35:
-            root.geometry(f"+{m-x}+{n-y-100}")
+            root.geometry(f"+{nx-x}+{ny-y-100}")
 
 
 show_mod.entryconfigure("開啟", state='disable')
 lock_mod.entryconfigure("關閉", state='disable')
+lock_mod.entryconfigure("固定在上個位置", state='disable')
 
 
 root.bind('<Motion>', motion)
