@@ -18,6 +18,8 @@ min_sec_format = '00:00'
 ct = 0
 ctfin = pygame.mixer.Sound(os.path.join('fin.wav'))
 lock = 0
+added = 0
+
 
 folder = ''
 
@@ -29,22 +31,25 @@ now_music = ''
 def ADD():
     global folder
     global res
-    if not folder:
-        try:
-            folder = tkinter.filedialog.askdirectory()
-            musics = [folder + '\\' + music for music in os.listdir(folder) if music.endswith(('.mp3','.wav','.ogg','.m4a','.flac'))]
-            ret = []
-            for i in musics:
-                ret.append(i.split('\\')[1:])
-                res.append(i.replace('\\', '/'))
-            var2 = StringVar()
-            var2.set(ret)
-        finally:
+    global added
+    if added != 0:
+        res = []
+    try:
+        folder = tkinter.filedialog.askdirectory()
+        musics = [folder + '\\' + music for music in os.listdir(folder) if music.endswith(('.mp3','.wav','.ogg','.m4a','.flac'))]
+        ret = []
+        for i in musics:
+            ret.append(i.split('\\')[1:])
+            res.append(i.replace('\\', '/'))
+        var2 = StringVar()
+        var2.set(ret)
+    finally:
+        if not folder:
             return
 
     global playing
     playing = True
-
+    added = 1
 
 def play():
     if len(res):
